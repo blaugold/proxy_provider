@@ -76,7 +76,7 @@ jobs:
       - name: Setup Melos
         run: dart pub global activate melos
       - name: Ensure Flutter generated files exist
-        working-directory: packages/proxy_provider_flutter_example
+        working-directory: packages/proxy_provider_flutter/example
         run: flutter pub get
       - name: Bootstrap package
         run: melos bs --scope proxy_provider_flutter_example
