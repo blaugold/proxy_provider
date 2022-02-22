@@ -64,13 +64,13 @@ jobs:
           - macos
           - windows
     runs-on: >-
-      ${{ fromJSON({
+      ${{ fromJSON('{
         "android":"macos-latest",
         "ios":"macos-latest",
         "linux":"ubuntu-latest",
         "macos":"macos-latest",
-        "windows":"windows-latest",
-      })[matrix.os] }}
+        "windows":"windows-latest"
+      }')[matrix.os] }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
