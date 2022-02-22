@@ -1,0 +1,54 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  formatting-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Setup Dart
+        uses: dart-lang/setup-dart@v1
+      - name: Setup Melos
+        run: dart pub global activate melos
+      - name: Check format
+        run: melos run formatting:check
+
+  analyze:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+      - name: Setup Melos
+        run: dart pub global activate melos
+      - name: Bootstrap packages
+        run: melos bs
+      - name: Analyze
+        run: melos run analyze
+
+  proxy_provider-test:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Setup Dart
+        uses: dart-lang/setup-dart@v1
+      - name: Setup Melos
+        run: dart pub global activate melos
+      - name: Bootstrap packages
+        run: melos bs --scope runner_dart
+      - name: Run tests
+        working-directory: packages/proxy_provider
+        run: dart test -r expanded

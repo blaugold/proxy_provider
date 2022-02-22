@@ -1,0 +1,7 @@
+tags:
+  manual:
+    skip: 'Test requires manual setup.'
+
+    presets:
+      manual:
+        skip: false
