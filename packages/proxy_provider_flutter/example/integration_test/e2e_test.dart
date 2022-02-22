@@ -1,7 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:integration_test/integration_test.dart';
 import 'package:proxy_provider/proxy_provider.dart';
 
 void main() {
+  IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+
   group('systemProxyProvider', () {
     testWidgets('is available', (_) async {
       expect(systemProxyProvider, isNotNull);
@@ -17,7 +20,7 @@ void main() {
             Uri.parse('https://example.com'),
           ),
         ),
-        returnsNormally,
+        completes,
       );
     });
   });

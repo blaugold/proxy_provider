@@ -53,7 +53,7 @@ jobs:
         working-directory: packages/proxy_provider
         run: dart test -r expanded
 
-  proxy_provider_flutter-test:
+  proxy_provider_flutter-integration_test:
     strategy:
       fail-fast: false
       matrix:
@@ -76,12 +76,12 @@ jobs:
       - name: Setup Melos
         run: dart pub global activate melos
       - name: Ensure Flutter generated files exist
-        working-directory: packages/proxy_provider_flutter
+        working-directory: packages/proxy_provider_flutter_example
         run: flutter pub get
       - name: Bootstrap package
-        run: melos bs --scope proxy_provider_flutter
+        run: melos bs --scope proxy_provider_flutter_example
       - name: Run integration tests
-        working-directory: packages/proxy_provider_flutter
+        working-directory: packages/proxy_provider_flutter/example
         shell: bash
         run: |
           case ${{ runner.os }} in
