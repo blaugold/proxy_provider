@@ -3,6 +3,7 @@ import 'dart:io';
 import '../proxy_provider.dart';
 import 'apple_proxy_provider.dart';
 import 'environment_proxy_provider.dart';
+import 'windows_proxy_provider.dart';
 
 /// A [ProxyProvider] that will use the system proxy settings, if available.
 ///
@@ -22,6 +23,8 @@ ProxyProvider? _providerForCurrentSystem() {
     return const EnvironmentProxyProvider();
   } else if (Platform.isIOS || Platform.isMacOS) {
     return const AppleProxyProvider();
+  } else if (Platform.isWindows) {
+    return const WindowsProxyProvider();
   } else {
     return null;
   }
