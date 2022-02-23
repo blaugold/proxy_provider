@@ -62,12 +62,14 @@ jobs:
           - ios
           - linux
           - macos
+          - windows
     runs-on: >-
       ${{ fromJSON('{
         "android":"macos-latest",
         "ios":"macos-latest",
         "linux":"ubuntu-latest",
-        "macos":"macos-latest"
+        "macos":"macos-latest",
+        "windows":"windows-2019"
       }')[matrix.os] }}
     steps:
       - name: Checkout repository
@@ -114,6 +116,9 @@ jobs:
               ;;
             macos)
               device=macos
+              ;;
+            windows)
+              device=windows
               ;;
           esac
           flutter test -d $device integration_test/e2e_test.dart

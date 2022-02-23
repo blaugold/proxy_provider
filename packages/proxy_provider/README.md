@@ -31,6 +31,7 @@ For Dart apps the following platforms are supported:
 
 - Linux
 - macOS
+- Windows
 
 For Flutter apps the following platforms are supported in combination with the
 [`proxy_provider_flutter`][proxy_provider_flutter] plugin:
@@ -39,5 +40,6 @@ For Flutter apps the following platforms are supported in combination with the
 - iOS
 - Linux
 - macOS
+- Windows
 
 [proxy_provider_flutter]: https://pub.dev/packages/proxy_provider_flutter
