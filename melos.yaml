@@ -13,6 +13,7 @@ command:
     workspaceChangelog: true
 
 scripts:
+  flutter:pub:get: melos exec -c 1 --flutter -- flutter pub get
   formatting:apply: dart format .
   formatting:check: dart format . --set-exit-if-changed
   analyze: melos exec -c 1 -- dart analyze --fatal-infos

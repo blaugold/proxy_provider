@@ -52,3 +52,79 @@ jobs:
       - name: Run tests
         working-directory: packages/proxy_provider
         run: dart test -r expanded
+
+  proxy_provider_flutter-integration_test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - android
+          - ios
+          - linux
+          - macos
+    runs-on: >-
+      ${{ fromJSON('{
+        "android":"macos-latest",
+        "ios":"macos-latest",
+        "linux":"ubuntu-latest",
+        "macos":"macos-latest"
+      }')[matrix.os] }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Install Flutter dependencies on Linux
+        if: ${{ matrix.os == 'linux' }}
+        run:
+          sudo apt-get install clang cmake ninja-build pkg-config libgtk-3-dev
+          liblzma-dev
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+      - name: Enable Flutter platforms
+        run: |
+          flutter config --enable-linux-desktop
+          flutter config --enable-macos-desktop
+      - name: Setup Melos
+        run: dart pub global activate melos
+      - name: Ensure Flutter generated files exist
+        working-directory: packages/proxy_provider_flutter/example
+        run: flutter pub get
+      - name: Bootstrap package
+        run: melos bs --scope proxy_provider_flutter_example
+      - name: Start Virtual Frame Buffer
+        if: ${{ matrix.os == 'linux' }}
+        run: |
+          Xvfb :99 &
+          echo "DISPLAY=:99" >>$GITHUB_ENV
+      - name: Start iOS simulator
+        uses: futureware-tech/simulator-action@v1
+        id: ios-simulator
+        if: ${{ matrix.os == 'ios' }}
+        with:
+          model: 'iPhone 13'
+          erase_before_boot: false
+          shutdown_after_job: true
+      - name: Run integration tests (desktop)
+        if: ${{ matrix.os != 'android' && matrix.os != 'ios' }}
+        working-directory: packages/proxy_provider_flutter/example
+        shell: bash
+        run: |
+          case ${{ matrix.os }} in
+            linux)
+              device=linux
+              ;;
+            macos)
+              device=macos
+              ;;
+          esac
+          flutter test -d $device integration_test/e2e_test.dart
+      - name: Run integration tests (ios)
+        if: ${{ matrix.os == 'ios' }}
+        working-directory: packages/proxy_provider_flutter/example
+        run: flutter test -d ${{ steps.ios-simulator.outputs.udid }} integration_test/e2e_test.dart
+      - name: Run integration tests (android)
+        if: ${{ matrix.os == 'android' }}
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 29
+          working-directory: packages/proxy_provider_flutter/example
+          script: flutter test -d emulator integration_test/e2e_test.dart
