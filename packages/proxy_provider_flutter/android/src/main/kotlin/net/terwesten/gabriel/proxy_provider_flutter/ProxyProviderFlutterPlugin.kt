@@ -23,9 +23,7 @@ class ProxyProviderFlutterPlugin : FlutterPlugin, MethodCallHandler {
             val destinationString = call.argument<String>("destination")
             val destination = URI.create(destinationString)
             val proxies = ProxySelector.getDefault().select(destination)
-            val proxyConfigurations = proxies
-                    .filter { it != Proxy.NO_PROXY }
-                    .map { it.toProxyConfiguration(destination) }
+            val proxyConfigurations = proxies.mapNotNull { it.toProxyConfiguration(destination) }
             result.success(proxyConfigurations)
         } else {
             result.notImplemented()
@@ -37,22 +35,25 @@ class ProxyProviderFlutterPlugin : FlutterPlugin, MethodCallHandler {
     }
 }
 
-private fun Proxy.toProxyConfiguration(destination: URI): Map<String, Any?> {
+private fun Proxy.toProxyConfiguration(destination: URI): Map<String, Any?>? {
     val result = mutableMapOf<String, Any?>()
 
-    result["type"] = when (type()) {
-        Proxy.Type.HTTP ->
+    result["type"] = when (type()!!) {
+        Proxy.Type.HTTP -> {
             // The Proxy.Type enum subsumes HTTP, HTTPS and FTP under the HTTP enum value.
             // We recover the more precise proxy type for proxy_provider from the scheme of the
             // destination URI.
-            when (destination.scheme) {
-                "http" -> "http"
-                "https" -> "https"
-                "ftp" -> "ftp"
-                else -> "throw RuntimeException("Unexpected destination scheme: ${destination.scheme}")"
-            }
+            val scheme = destination.scheme
+            val expectedSchemes = listOf("http", "https", "ftp")
+            if (!expectedSchemes.contains(scheme))
+                throw RuntimeException("Unexpected destination scheme: ${destination.scheme}")
+
+            scheme
+        }
         Proxy.Type.SOCKS -> "socks"
-        else -> throw RuntimeException("Unexpected proxy type: ${type()}")
+        // When no proxy should be used ProxySelector.select returns a single Proxy whose type
+        // is DIRECT.
+        Proxy.Type.DIRECT -> return null
     }
 
     val address = this.address() as InetSocketAddress
