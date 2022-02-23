@@ -90,7 +90,13 @@ jobs:
         run: flutter pub get
       - name: Bootstrap package
         run: melos bs --scope proxy_provider_flutter_example
-      - uses: futureware-tech/simulator-action@v1
+      - name: Start Virtual Frame Buffer
+        if: ${{ matrix.os == 'linux' }}
+        run: |
+          Xvfb :99 &
+          echo "DISPLAY=:99" >>$GITHUB_ENV
+      - name: Start iOS simulator
+        uses: futureware-tech/simulator-action@v1
         id: ios-simulator
         if: ${{ matrix.os == 'ios' }}
         with:
