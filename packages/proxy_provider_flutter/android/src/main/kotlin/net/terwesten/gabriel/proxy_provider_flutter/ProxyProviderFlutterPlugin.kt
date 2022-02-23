@@ -44,9 +44,9 @@ private fun Proxy.toProxyConfiguration(destination: URI): Map<String, Any?>? {
             // We recover the more precise proxy type for proxy_provider from the scheme of the
             // destination URI.
             val scheme = destination.scheme
-            val expectedSchemes = listOf("http", "https", "ftp")
+            val expectedSchemes = setOf("http", "https", "ftp")
             if (!expectedSchemes.contains(scheme))
-                throw RuntimeException("Unexpected destination scheme: ${destination.scheme}")
+                throw RuntimeException("Unexpected destination scheme: $scheme")
 
             scheme
         }
