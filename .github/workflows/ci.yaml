@@ -69,7 +69,7 @@ jobs:
         "ios":"macos-latest",
         "linux":"ubuntu-latest",
         "macos":"macos-latest",
-        "windows":"windows-latest"
+        "windows":"windows-2019"
       }')[matrix.os] }}
     steps:
       - name: Checkout repository
